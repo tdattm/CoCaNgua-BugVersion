@@ -16,12 +16,11 @@ class Piece:
         pieceRadius = SQUARE_HEIGHT//2.3
         
         pygame.draw.circle(window, self.color, (self.xCenter, self.yCenter), pieceRadius)
-        pygame.draw.circle(window, "brown", (self.xCenter, self.yCenter), pieceRadius, 2)
         
     def draw_Valid_Moves(self, window, validMoves):
-        validMoveRadius = SQUARE_HEIGHT//5
+        validMoveRadius = SQUARE_HEIGHT//2.3
         for move in validMoves:
             xMove = move[1]*SQUARE_HEIGHT + SQUARE_HEIGHT//2
             yMove = move[0]*SQUARE_HEIGHT + SQUARE_HEIGHT//2
-            pygame.draw.circle(window, (166, 166, 166), (xMove, yMove), validMoveRadius)
+            pygame.draw.circle(window, (166, 166, 166), (xMove, yMove), validMoveRadius, 2)
         

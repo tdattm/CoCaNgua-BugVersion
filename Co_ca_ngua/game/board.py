@@ -1,6 +1,6 @@
 import pygame
 from game.pieces import Piece
-from game.dice import Dice
+# from game.dice import Dice
 from game.constants import SQUARE_HEIGHT, NROWS, NCOLS, STANDARD_CENTER_SQUARE, STANDARD_BACKGROUND_DICE, ROLL_DICE, BOX_DICE
 
 class Board:
@@ -14,19 +14,19 @@ class Board:
         self.position = {
                         0: (0, 6), 1: (1, 6), 2: (2, 6), 3: (3, 6), 4: (4, 6), 5: (5, 6), 6: (6, 6),
                         7: (6, 5), 8: (6, 4), 9: (6, 3), 10: (6, 2), 11: (6, 1), 12: (6, 0), 13: (7, 0),
-                        "o1": (7, 1), "o2": (7, 2), "o3": (7, 3), "o4": (7, 4), "o5": (7, 5), "o6": (7, 6),
+                        13.1: (7, 1), 13.2: (7, 2), 13.3: (7, 3), 13.4: (7, 4), 13.5: (7, 5), 13.6: (7, 6),
                         
                         14: (9, 0), 15: (9, 1), 16: (9, 2), 17: (9, 3), 19: (9, 4), 19: (9, 5), 20: (9, 6),
                         21: (10, 6), 22: (11, 6), 23: (12, 6), 24: (13, 6), 25: (14, 6), 26: (15, 6), 27: (15, 7),
-                        "g1": (14, 7), "g2": (13, 7), "g3": (12, 7), "g4": (11, 7), "g5": (10, 7), "g6": (9, 7),
+                        27.1: (14, 7), 27.2: (13, 7), 27.3: (12, 7), 27.4: (11, 7), 27.5: (10, 7), 27.6: (9, 7),
                         
                         28: (15, 9), 29: (14, 9), 30: (13, 9), 31: (12, 9), 32: (11, 9), 33: (10, 9), 
-                        34: (9, 9), 35: (9, 10), 36: (9, 11), 37: (9, 12), 38: (9, 13), 39: (9, 14), 40: (9, 15), 41: (8, 15), 
-                        "b1": (8, 14), "b2": (8, 13), "b3": (8, 12), "b4": (8, 11), "b5": (8, 10), "b6": (8, 9),    
+                        34: (9, 9), 35: (9, 10), 36: (9, 11), 37: (9, 12), 38: (9, 13), 39: (9, 14), 40: (9, 15), 41: (8, 15),  
+                        41.1: (8, 14), 41.2: (8, 13), 41.3: (8, 12), 41.4: (8, 11), 41.5: (8, 10), 41.6: (8, 9),  
                         
                         42: (7, 15), 43: (7, 14), 44: (7, 13), 45: (7, 12), 46: (7, 11), 47: (7, 10), 48: (7, 9),
                         49: (5, 9), 50: (4, 9), 51: (3, 9), 52: (2, 9), 53: (1, 9), 54: (0, 9), 55: (0, 8),
-                        "r1": (1, 8), "r2": (2, 8), "r3": (3, 8), "r4": (4, 8), "r5": (5, 8), "r6": (6, 8),
+                        55.1: (1, 8), 55.2: (2, 8), 55.3: (3, 8), 55.4: (4, 8), 55.5: (5, 8), 55.6: (6, 8),
                         }
         
     def initialize_board(self):
@@ -132,6 +132,34 @@ class Board:
         return self.board[row][col]
     
     def move(self, piece, row, col):
+        # red_home_coords = [(2,2),(2,3),(3,2),(3,3)]
+        # blue_home_coords = [(2,12), (2,13), (3,12), (3,13)]
+        # orange_home_coords = [(12,2), (12,3), (13,2), (13,3)]
+        # green_home_coords = [(12,12), (12,13), (13,12), (13,13)]
+        
+        captured_piece = self.board[row][col]
+        if captured_piece.color == "red":
+            for i in (2,3):
+                for j in (2,3):
+                    if self.board[i][j] == 0:
+                        self.board[i][j] = captured_piece
+        elif captured_piece.color == "blue":
+            for i in (2,3):
+                for j in (12,13):
+                    if self.board[i][j] == 0:
+                        self.board[i][j] = captured_piece
+        elif captured_piece.color == "orange":
+            for i in (12,13):
+                for j in (2,3):
+                    if self.board[i][j] == 0:
+                        self.board[i][j] = captured_piece
+        else:
+            for i in (12,13):
+                for j in (12,13):
+                    if self.board[i][j] == 0:
+                        self.board[i][j] = captured_piece
+
+        
         self.board[row][col] = self.board[piece.row][piece.col]
         self.board[piece.row][piece.col] = 0
         piece.row = row
