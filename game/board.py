@@ -6,10 +6,6 @@ from game.constants import SQUARE_HEIGHT, NROWS, NCOLS, STANDARD_CENTER_SQUARE, 
 class Board:
     def __init__(self):
         self.board = []
-        self.nRed_pieces = 0
-        self.nBlue_pieces = 0
-        self.nGreen_pieces = 0
-        self.nOrange_pieces = 0
         self.initialize_board()
         self.position = {
                         0: (0, 6), 1: (1, 6), 2: (2, 6), 3: (3, 6), 4: (4, 6), 5: (5, 6), 6: (6, 6),
@@ -36,19 +32,15 @@ class Board:
                 if row == 2 or row == 3:
                     if col == 2 or col == 3:
                         self.board[row].append(Piece(row, col, "red"))
-                        self.nRed_pieces += 1
                     elif col == 12 or col == 13:
                         self.board[row].append(Piece(row, col, "blue"))
-                        self.nBlue_pieces += 1
                     else:
                         self.board[row].append(0) 
                 elif row == 12 or row == 13:
                     if col == 2 or col == 3:
                         self.board[row].append(Piece(row, col, "orange"))
-                        self.nOrange_pieces += 1
                     elif col == 12 or col == 13:
                         self.board[row].append(Piece(row, col, "green"))
-                        self.nGreen_pieces += 1
                     else:
                         self.board[row].append(0) 
                 else:
@@ -138,42 +130,33 @@ class Board:
         # green_home_coords = [(12,12), (12,13), (13,12), (13,13)]
         
         captured_piece = self.board[row][col]
-        if captured_piece.color == "red":
-            for i in (2,3):
-                for j in (2,3):
-                    if self.board[i][j] == 0:
-                        self.board[i][j] = captured_piece
-        elif captured_piece.color == "blue":
-            for i in (2,3):
-                for j in (12,13):
-                    if self.board[i][j] == 0:
-                        self.board[i][j] = captured_piece
-        elif captured_piece.color == "orange":
-            for i in (12,13):
-                for j in (2,3):
-                    if self.board[i][j] == 0:
-                        self.board[i][j] = captured_piece
+        if captured_piece:
+            if captured_piece.color == "red":
+                for i in (2,3):
+                    for j in (2,3):
+                        if self.board[i][j] == 0:
+                            self.board[i][j] = captured_piece
+            elif captured_piece.color == "blue":
+                for i in (2,3):
+                    for j in (12,13):
+                        if self.board[i][j] == 0:
+                            self.board[i][j] = captured_piece
+            elif captured_piece.color == "orange":
+                for i in (12,13):
+                    for j in (2,3):
+                        if self.board[i][j] == 0:
+                            self.board[i][j] = captured_piece
+            else:
+                for i in (12,13):
+                    for j in (12,13):
+                        if self.board[i][j] == 0:
+                            self.board[i][j] = captured_piece
         else:
-            for i in (12,13):
-                for j in (12,13):
-                    if self.board[i][j] == 0:
-                        self.board[i][j] = captured_piece
+            pass
 
         
         self.board[row][col] = self.board[piece.row][piece.col]
         self.board[piece.row][piece.col] = 0
         piece.row = row
         piece.col = col
-        
-    def reduce_piece(self, color):
-        # Giảm số lượng cờ có màu "color" đi một
-        if color == "red":
-            self.nRed_pieces = self.nRed_pieces - 1 
-        elif color == "blue":
-            self.nBlue_pieces = self.nBlue_pieces - 1 
-        elif color == "orange":
-            self.nOrange_pieces = self.nOrange_pieces - 1 
-        else:
-            self.nGreen_pieces = self.nGreen_pieces - 1 
             
-    

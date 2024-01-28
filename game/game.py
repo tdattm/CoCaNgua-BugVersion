@@ -258,9 +258,7 @@ class Game:
                 return True
             else:
                 if self.can_eat:
-                    slain_color = self.board.board[row][col].color
-                    new_position = 0
-                    self.board.reduce_piece(slain_color)
+                    self.board.board[row][col] = 0
                     self.board.move(self.selected, row, col)
                     return True
         else:
