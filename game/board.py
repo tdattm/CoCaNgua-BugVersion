@@ -1,6 +1,5 @@
 import pygame
 from game.pieces import Piece
-# from game.dice import Dice
 from game.constants import SQUARE_HEIGHT, NROWS, NCOLS, STANDARD_CENTER_SQUARE, STANDARD_BACKGROUND_DICE, ROLL_DICE, BOX_DICE
 
 class Board:

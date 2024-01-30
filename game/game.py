@@ -38,7 +38,10 @@ class Game:
                 piece = self.board.get_piece(row, col)
                 if piece and piece.color == self.turn:
                     if self.check_piece_at_home(piece):
-                        pass
+                        if value_dice == 6:
+                            valid_pieces.add(piece)
+                        else:
+                            pass
                     elif self.check_piece_blocked(piece, value_dice):
                         pass 
                     else:   
@@ -60,11 +63,24 @@ class Game:
             self.can_eat = False
         return valid_pieces
     
-    # def get_valid_moves(self, piece, value_dice):
-    #     if self.can_eat:
-    #         self.valid_moves = self.get_eat_moves(piece, value_dice)
-    #     else:
-    #         self.valid_moves = set.union(self.get_valid_moves(self.selected, value_dice), self.get_eat_moves(self.selected, value_dice))
+    def get_valid_moves(self, piece, value_dice):
+        if self.can_eat:
+            self.valid_moves = self.get_eat_moves(piece, value_dice)
+        else:
+            if self.check_piece_at_home(piece, value_dice):
+                self.valid_moves = set.union(self.get_walk_moves(self.selected, value_dice), self.get_eat_moves(self.selected, value_dice))
+                
+                if piece.color == "red":
+                    self.valid_moves.add((0,6))
+                elif piece.color == "blue":
+                    self.valid_moves.add((7,15))
+                elif piece.color == "orange":
+                    self.valid_moves.add((9,0))
+                else:
+                    self.valid_moves.add((15,9))
+                    
+            else:
+                self.valid_moves = set.union(self.get_walk_moves(self.selected, value_dice), self.get_eat_moves(self.selected, value_dice))
     
     def get_walk_moves(self, piece, value_dice):
         walk_moves = set([])
