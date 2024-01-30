@@ -22,5 +22,5 @@ class Piece:
         for move in validMoves:
             xMove = move[1]*SQUARE_HEIGHT + SQUARE_HEIGHT//2
             yMove = move[0]*SQUARE_HEIGHT + SQUARE_HEIGHT//2
-            pygame.draw.circle(window, (166, 166, 166), (xMove, yMove), validMoveRadius, 2)
+            pygame.draw.circle(window, (166, 166, 166), (xMove, yMove), validMoveRadius)
         

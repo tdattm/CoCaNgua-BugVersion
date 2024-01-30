@@ -11,7 +11,7 @@ class Board:
                         7: (6, 5), 8: (6, 4), 9: (6, 3), 10: (6, 2), 11: (6, 1), 12: (6, 0), 13: (7, 0),
                         13.1: (7, 1), 13.2: (7, 2), 13.3: (7, 3), 13.4: (7, 4), 13.5: (7, 5), 13.6: (7, 6),
                         
-                        14: (9, 0), 15: (9, 1), 16: (9, 2), 17: (9, 3), 19: (9, 4), 19: (9, 5), 20: (9, 6),
+                        14: (9, 0), 15: (9, 1), 16: (9, 2), 17: (9, 3), 18: (9, 4), 19: (9, 5), 20: (9, 6),
                         21: (10, 6), 22: (11, 6), 23: (12, 6), 24: (13, 6), 25: (14, 6), 26: (15, 6), 27: (15, 7),
                         27.1: (14, 7), 27.2: (13, 7), 27.3: (12, 7), 27.4: (11, 7), 27.5: (10, 7), 27.6: (9, 7),
                         
@@ -109,7 +109,7 @@ class Board:
         window.blit(ROLL_DICE,(SQUARE_HEIGHT*17.5, SQUARE_HEIGHT*1))
         window.blit(BOX_DICE, (SQUARE_HEIGHT*17.5, SQUARE_HEIGHT*6.5))
                             
-    def draw_board(self, window, selected, valid_pieces):
+    def draw_board(self, window, selected, valid_move):
         self.draw_home_and_nest(window)
         for row in range(NROWS):
             for col in range(NCOLS):
@@ -117,7 +117,7 @@ class Board:
                 if piece != 0:
                     piece.draw_piece(window)
         if selected != None:
-            selected.draw_Valid_Moves(window, valid_pieces)
+            selected.draw_Valid_Moves(window, valid_move)
         
     def get_piece(self, row, col):
         return self.board[row][col]

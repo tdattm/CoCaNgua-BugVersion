@@ -12,9 +12,9 @@ class Game:
         self.turn = "red"
         self.selected = None
         self.valid_pieces = set([])
-        self.valid_moves = set([])
+        self.valid_move = set([])
         self.eating = False
-        self.can_eat = False
+        self.keeping = False
         self.winner = None
         
     def change_turn(self):
@@ -29,7 +29,23 @@ class Game:
         self.selected = None
         self.valid_pieces = set([])    
         self.eating = False
-        
+    
+    def check_win(self):
+        check = False
+        for value in self.board.position.values():
+            row, col = value[0], value[1]
+            piece = self.board.get_piece(row, col)
+            if piece != 0 and piece.color == self.turn:
+                if self.check_piece_at_nest(piece):
+                    check = True   
+                else: 
+                    return False
+        return check
+    
+    def get_winner(self):
+        if self.check_win:
+            self.winner = self.turn
+    
     def get_valid_pieces(self, value_dice):
         eat_pieces = set([])
         valid_pieces = set([])
@@ -45,14 +61,14 @@ class Game:
                     elif self.check_piece_blocked(piece, value_dice):
                         pass 
                     else:   
-                        walk_moves = self.get_walk_moves(piece, value_dice)
+                        walk_moves = self.get_walk_move(piece, value_dice)
                         if not self.check_piece_at_nest(piece, value_dice) and not self.piece_can_reach_nest(piece, value_dice):
-                            eat_moves = self.get_eat_moves(piece, value_dice)
-                        valid_moves = set.union(walk_moves, eat_moves)
+                            eat_moves = self.get_eat_move(piece, value_dice)
+                        valid_move = set.union(walk_moves, eat_moves)
                         
                         if eat_moves != set([]):
                             eat_pieces.add(piece)
-                        elif valid_moves != set([]):
+                        elif valid_move != set([]):
                             valid_pieces.add(piece)
                         else:
                             pass
@@ -63,31 +79,31 @@ class Game:
             self.can_eat = False
         return valid_pieces
     
-    def get_valid_moves(self, piece, value_dice):
+    def get_valid_move(self, piece, value_dice):
         if self.can_eat:
-            self.valid_moves = self.get_eat_moves(piece, value_dice)
+            self.valid_move = self.get_eat_move(piece, value_dice)
         else:
-            if self.check_piece_at_home(piece, value_dice):
-                self.valid_moves = set.union(self.get_walk_moves(self.selected, value_dice), self.get_eat_moves(self.selected, value_dice))
-                
-                if piece.color == "red":
-                    self.valid_moves.add((0,6))
-                elif piece.color == "blue":
-                    self.valid_moves.add((7,15))
-                elif piece.color == "orange":
-                    self.valid_moves.add((9,0))
+            if self.check_piece_at_home(piece):
+                if value_dice == 6:    
+                    if piece.color == "red":
+                        self.valid_move = set([(0,6)])
+                    elif piece.color == "blue":
+                        self.valid_move = set([(7,15)])
+                    elif piece.color == "orange":
+                        self.valid_move = set([(9,0)])
+                    else:
+                        self.valid_move = set([(15,9)])
                 else:
-                    self.valid_moves.add((15,9))
-                    
+                    pass
             else:
-                self.valid_moves = set.union(self.get_walk_moves(self.selected, value_dice), self.get_eat_moves(self.selected, value_dice))
+                self.valid_move = set.union(self.get_walk_move(self.selected, value_dice), self.get_eat_move(self.selected, value_dice))
     
-    def get_walk_moves(self, piece, value_dice):
-        walk_moves = set([])
+    def get_walk_move(self, piece, value_dice):
+        walk_move = set([])
         
         position = self.position_piece(piece)
         new_position = -1
-        if self.piece_can_reach_nest(piece):
+        if self.piece_can_reach_nest(piece, value_dice):
             if piece.color == "red":
                 new_position = 55 + (value_dice - 55 + position)/10
             elif piece.color == "blue":
@@ -123,21 +139,24 @@ class Game:
                     new_position = position + value_dice/10          
         else:
             new_position = position + value_dice
+            
             if new_position > 55:
                 new_position = new_position - 55
         
-        if new_position != -1:    
+        if new_position != -1:
+            if type(new_position) == float:    
+                new_position = round(new_position, 1)
             new_position_coord = self.board.position[new_position]
             left_square = self.board.get_piece(new_position_coord[0], new_position_coord[1])
             
             if left_square == 0:
-                walk_moves.add(new_position_coord)
-            return walk_moves
+                walk_move.add(new_position_coord)
+            return walk_move
         else:
             return set([])
     
-    def get_eat_moves(self, piece, value_dice):
-        eat_moves = set([])
+    def get_eat_move(self, piece, value_dice):
+        eat_move = set([])
         
         position = self.position_piece(piece)
         new_position = position + value_dice
@@ -152,8 +171,8 @@ class Game:
         elif left_piece.color == self.turn:
             pass
         else:
-            eat_moves.add(new_position_coord)
-        return eat_moves
+            eat_move.add(new_position_coord)
+        return eat_move
            
     def position_piece(self, piece):
         pos = (piece.row, piece.col)
@@ -268,15 +287,68 @@ class Game:
      
     def _move(self, row, col):
         new_position = self.board.get_piece(row, col)
-        if self.selected and (row, col) in self.valid_moves:
+        if self.selected and (row, col) in self.valid_move:
             if new_position == 0:
-                self.board.move(self.selected, row, col)       
-                return True
+                self.board.move(self.selected, row, col)
             else:
                 if self.can_eat:
                     self.board.board[row][col] = 0
                     self.board.move(self.selected, row, col)
-                    return True
+                else:
+                    return False
+            return True
         else:
             return False
-    
+        
+    def select(self, row, col, value_dice):
+        if row < 16 and col < 16:
+            if value_dice == 6:
+                if self.selected:
+                    result = self._move(row, col)
+                    if result:
+                        if value_dice == 6:
+                            # Continue
+                            self.keeping = True
+                            self.dice.value_dice()
+                            value_dice = self.dice.get_value_dice()
+                            # self.selected = None
+                            # self.select(row, col, value_dice)
+                            
+                            # # """
+                            # for key in self.board.position.keys():
+                            #     row, col = self.board.position[key][0], self.board.position[key][1]    
+                            #     piece = self.board.get_piece(row, col)
+                            #     if piece != 0 and piece.color == self.turn and piece in self.valid_pieces:
+                            # # """
+                            piece = self.board.get_piece(row, col)
+                            if self.can_eat:
+                                self.valid_move = self.get_eat_move(piece, value_dice)
+                            else:
+                                self.valid_move = self.get_walk_move(piece, value_dice)
+                                
+                            if self.valid_move != set([]):
+                                self.valid_pieces = set([piece])
+                                self.selected = piece
+                            else:
+                                self.change_turn()
+                        else:
+                            self.change_turn() 
+                    else:
+                        if not self.keeping:
+                            self.selected = None
+                            self.get_winner()
+                            self.select(row, col, value_dice)   
+                else:
+                        self.valid_pieces = self.get_valid_pieces(value_dice)
+                        if self.keeping:
+                            pass
+                        else:
+                            piece = self.board.get_piece(row, col)
+                            if piece != 0 and piece.color == self.turn and piece in self.valid_pieces:
+                                self.selected = piece
+                                self.get_valid_move(self.selected, value_dice)
+            else:
+                self.change_turn()
+            
+                    
+                
