@@ -1,4 +1,4 @@
-# Mimpython_project
+# "Cờ cá ngựa" - bug version 
 
 ## Clone repository
 
